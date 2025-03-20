@@ -7,3 +7,8 @@ __pycache__
 .terraform
 .DS_Store
 dlthub/.dlt/secrets.toml
+.dlt/secrets.toml
+de_zoomcamp_project.egg-info/
+*.duckdb
+terraform/terraform.tfstate.backup
+terraform/terraform.tfstate
