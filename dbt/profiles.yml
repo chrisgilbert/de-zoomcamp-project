@@ -1,0 +1,12 @@
+vehicle_data:
+  target: dev
+  outputs:
+    dev:
+      type: bigquery
+      method: oauth
+      project: "{{ env_var('GCP_PROJECT_ID') }}"
+      dataset: vehicle_data
+      threads: 4
+      timeout_seconds: 300
+      location: europe-west2
+      priority: interactive

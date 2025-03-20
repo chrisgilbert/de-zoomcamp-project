@@ -1,0 +1,9 @@
+.venv
+data/
+dlthub/data
+.cursor
+.pytest_cache
+__pycache__
+.terraform
+.DS_Store
+dlthub/.dlt/secrets.toml

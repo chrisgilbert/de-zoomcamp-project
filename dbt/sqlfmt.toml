@@ -1,0 +1,15 @@
+[sqlfmt]
+# Line length configuration
+line_length = 88
+
+# Indentation configuration
+tab_width = 4
+use_spaces = true
+
+# Formatting options
+uppercase = false
+capitalize_keywords = false
+comma_style = "trailing"
+
+# Dialect configuration
+dialect = "bigquery" 

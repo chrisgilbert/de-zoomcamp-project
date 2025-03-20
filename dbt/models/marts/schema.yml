@@ -1,0 +1,46 @@
+version: 2
+
+models:
+  - name: mart_vehicle_registrations
+    description: "Vehicle registrations analysis by fuel type and time period"
+    columns:
+      - name: registration_month
+        description: "Month of vehicle registration"
+        tests:
+          - not_null
+      - name: fuel_type
+        description: "Type of fuel used by the vehicle"
+        tests:
+          - not_null
+      - name: monthly_registrations
+        description: "Number of vehicle registrations in the month"
+        tests:
+          - not_null
+      - name: market_share
+        description: "Market share of the fuel type in the month"
+        tests:
+          - not_null
+      - name: yoy_growth
+        description: "Year-over-year growth rate"
+      - name: rolling_12_month_total
+        description: "Total registrations over the last 12 months"
+        tests:
+          - not_null
+      - name: registration_year
+        description: "Year of registration"
+        tests:
+          - not_null
+      - name: registration_month_num
+        description: "Month number (1-12)"
+        tests:
+          - not_null
+      - name: registration_month_name
+        description: "Month name (Jan, Feb, etc.)"
+        tests:
+          - not_null
+      - name: powertrain_category
+        description: "Category of powertrain (Electric/Hybrid or Conventional)"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['Electric/Hybrid', 'Conventional'] 

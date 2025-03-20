@@ -1,0 +1,60 @@
+version: 2
+
+sources:
+  - name: raw
+    database: "{{ env_var('GCP_PROJECT_ID') }}"
+    schema: "{{ env_var('BQ_DATASET', 'vehicle_data') }}"
+    tables:
+      - name: gov_uk_vehicle_data
+        description: "Raw vehicle licensing data from the UK Government"
+        columns:
+          - name: id
+            description: "Unique identifier for the vehicle"
+          - name: registration_date
+            description: "Date when the vehicle was registered"
+          - name: make
+            description: "Vehicle manufacturer"
+          - name: model
+            description: "Vehicle model"
+          - name: body_type
+            description: "Type of vehicle body"
+          - name: fuel_type
+            description: "Type of fuel used by the vehicle"
+          - name: engine_capacity
+            description: "Engine capacity in cc"
+          - name: co2_emissions
+            description: "CO2 emissions in g/km"
+          - name: color
+            description: "Vehicle color"
+          - name: data_source
+            description: "Source of the data"
+          - name: extraction_date
+            description: "Date when the data was extracted"
+            
+      - name: smmt_vehicle_data
+        description: "Raw vehicle registration data from SMMT"
+        columns:
+          - name: month
+            description: "Month of registration data"
+          - name: total_registrations
+            description: "Total number of vehicle registrations"
+          - name: private_registrations
+            description: "Number of private vehicle registrations"
+          - name: fleet_registrations
+            description: "Number of fleet vehicle registrations"
+          - name: business_registrations
+            description: "Number of business vehicle registrations"
+          - name: diesel_registrations
+            description: "Number of diesel vehicle registrations"
+          - name: petrol_registrations
+            description: "Number of petrol vehicle registrations"
+          - name: bev_registrations
+            description: "Number of battery electric vehicle registrations"
+          - name: phev_registrations
+            description: "Number of plug-in hybrid electric vehicle registrations"
+          - name: hev_registrations
+            description: "Number of hybrid electric vehicle registrations"
+          - name: data_source
+            description: "Source of the data"
+          - name: extraction_date
+            description: "Date when the data was extracted" 
