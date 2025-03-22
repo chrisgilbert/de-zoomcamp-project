@@ -7,7 +7,7 @@ resource "google_bigquery_dataset" "vehicle_data" {
   dataset_id                  = var.dataset_id
   friendly_name               = "Vehicle Data"
   description                 = "Dataset for UK vehicle registrations"
-  location                    = "EU"
+  location                    = "europe-west2"
   default_table_expiration_ms = null
 }
 
