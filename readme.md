@@ -81,8 +81,9 @@ Before you begin, please create a project in Google BigQuery if you don't alread
    (you do not need to change the rest of the file)
 
    ```
-   export GCP_PROJECT_ID=your-gcp-project-id
-   export GCS_BUCKET=your-gcs-bucket-name
+   export GCP_PROJECT_ID=my-project-id
+   export GCS_LOCATION=europe-west2 # Change if you wish
+   export GCS_BUCKET=my-bucket-name
    ```
 
 3. Create and activate a virtual environment:
@@ -117,12 +118,12 @@ Before you begin, please create a project in Google BigQuery if you don't alread
 
 ### Running the Pipeline
 
-1. Run the DLT pipeline to download and load data:
+1. Run the DLT pipeline to download and load data. This will also show the pipeline executing in prefect - you can click on the link it generates, or browse to http://localhost:4200/jobs
    ```
    make load
    ```
 
-3. Run DBT transformations:
+3. Run DBT transformations (again these will execute using prefect)
    ```
    make transformations
    ```
@@ -131,8 +132,9 @@ If this all works, you will have a vehicle_data dataset with some tables and vie
 
 ## Data Models
 
-### Staging Models
-- `stg_gov_uk_vehicle_data`: Standardized vehicle licensing data from the UK Government
+### Staging Models 
+- `stg_unpivot_gov_uk_vehicles`: Normalise the many quarterly columns into rows, add fields for year and quarter. Paritition by year, cluster by fuel type to facilitate better reporting performance.
+- `stg_normalised_fuel_types_gov_uk`: Normalisation of fuel types, combining the different PHEV and HEV engine types. Partition by year and cluster by fuel type.
 
 ### Reporting Models
 - `rep_aggregations_by_manufacturer`: Analysis of registrations by vehicle manufacturer
