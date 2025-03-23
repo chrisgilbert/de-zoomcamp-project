@@ -12,3 +12,5 @@ de_zoomcamp_project.egg-info/
 *.duckdb
 terraform/terraform.tfstate.backup
 terraform/terraform.tfstate
+dbt/target
+dbt/dbt_packages

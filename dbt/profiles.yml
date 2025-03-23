@@ -8,5 +8,5 @@ vehicle_data:
       dataset: vehicle_data
       threads: 4
       timeout_seconds: 300
-      location: europe-west2
+      location: "{{ env_var('GCS_LOCATION') }}"
       priority: interactive

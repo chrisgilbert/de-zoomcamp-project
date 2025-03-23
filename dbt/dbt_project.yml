@@ -23,8 +23,6 @@ clean-targets:         # directories to be removed by `dbt clean`
 models:
   vehicle_data:
     staging:
-      +materialized: view
-    intermediate:
-      +materialized: view
-    marts:
-      +materialized: table 
+      +materialized: table
+    reporting:
+      +materialized: view 

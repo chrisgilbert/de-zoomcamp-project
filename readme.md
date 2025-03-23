@@ -1,4 +1,4 @@
-# Vehicle Data Engineering Project
+# Vehicle Registrations Data Engineering Project
 
 ## Description
 
@@ -12,6 +12,8 @@ The SMMT data is then used to supplement the missing months up until Feb 2025.
 
 The project analyzes vehicle registration trends in the UK, focusing on the adoption of different fuel types (petrol, diesel, electric, hybrid) over time.
 
+This helps show the uptake of alternative fuel vehicles. Where available in the gov.uk data, it is broken down into manufactuer, so we can see the most popular brands of EVs and hybrids over time.
+
 ## Tech Stack
 
 The supporting infrastructure is:
@@ -20,8 +22,8 @@ The supporting infrastructure is:
 - DLT (Data Loading Tool) for ingestion into BigQuery
 - DBT (Data Build Tool) for data transformation in BigQuery
 - Prefect Cloud for orchestrating the jobs
-- Terraform for managing the underlying infrastructure
-- Metabase for visualizing the data
+- Opentofu for managing the underlying infrastructure
+- Looker studio for visualizing the data
 - SQLFmt for SQL formatting
 
 ## Project Structure
@@ -42,17 +44,12 @@ The supporting infrastructure is:
 │   │   └── smmt_extractor.py    # SMMT data extractor
 │   ├── config.py           # Configuration settings
 │   └── pipeline.py         # Main pipeline module
-├── prefect/                # Prefect workflows
-│   └── flows/              # Prefect flow definitions
-│       ├── vehicle_data_flow.py  # Main pipeline flow
-│       └── deploy.py       # Deployment script
-├── terraform/              # Terraform infrastructure code
+├── terraform/              # Terraform (OpenTofu) infrastructure code
 ├── tests/                  # Test files
 │   └── test_dlt_pipeline.py  # Tests for the DLT pipeline
 ├── data/                   # Data directory (created at runtime)
 │   ├── raw/                # Raw data files
 │   └── processed/          # Processed data files
-├── format_sql.py           # Script to format SQL files locally
 ├── requirements.txt        # Python dependencies
 └── README.md               # Project documentation
 ```
@@ -63,8 +60,12 @@ The supporting infrastructure is:
 
 - Python 3.8+
 - Google Cloud account with BigQuery enabled
+- Google Cloud project already created
+- A working gcloud CLI set up with authentication to access it.
+- The BigQuery and storage APIs enabled for your CLI user
 - Prefect Cloud account (optional, can use local Prefect server)
-- Terraform (for infrastructure setup)
+- Opentofu (for infrastructure setup) 
+- Asdf - for managing versions of tools
 
 ### Installation
 
@@ -74,36 +75,46 @@ The supporting infrastructure is:
    cd vehicle-data-project
    ```
 
-2. Create and activate a virtual environment:
+2. Set up environment variables:
+   Create a `.env` file with the following variables in the root of the repo:
+   ```
+   export GCP_PROJECT_ID=your-gcp-project-id
+   export BQ_DATASET=vehicle_data
+   export GCS_BUCKET=your-gcs-bucket-name
+   export PREFECT_API_KEY=your-prefect-api-key
+   export PREFECT_WORKSPACE=your-prefect-workspace
+
+3. Create and activate a virtual environment:
    ```
    python -m venv .venv
-   source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+   source .venv/bin/activate  
+   
+   # On Windows: .venv\Scripts\activate
    ```
 
-3. Install dependencies:
+4. Install dependencies:
    ```
    pip install -r requirements.txt
    ```
 
-4. Set up environment variables:
-   Create a `.env` file with the following variables:
+5. Install OpenTofu using the instructions at https://opentofu.org/docs/intro/install/
+
+6. Apply the opentofu configuration:
+
    ```
-   GCP_PROJECT_ID=your-gcp-project-id
-   BQ_DATASET=vehicle_data
-   GCS_BUCKET=your-gcs-bucket-name
-   PREFECT_API_KEY=your-prefect-api-key
-   PREFECT_WORKSPACE=your-prefect-workspace
+   cd tofu
+   tofu apply
    ```
+
+7. Check the dlthub secrets file and ensure it is configured correctly:
+
+   cat dlthub/.dlt/secrets.toml
 
 ### Running the Pipeline
 
-1. Format SQL files (development only):
+1. Run the DLT pipeline to extract and load data:
    ```
-   python format_sql.py
-   ```
-
-2. Run the DLT pipeline to extract and load data:
-   ```
+   cd dlthub
    python -m dlt.pipeline
    ```
 
