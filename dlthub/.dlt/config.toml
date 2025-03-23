@@ -1,31 +1,5 @@
-# DLT Configuration for Scrapy
-
-# Common scraping settings for all scrapers
-[sources.scraping]
-user_agent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.114 Safari/537.36"
-download_delay = 3
-concurrent_requests = 1
-robotstxt_obey = true
-autothrottle_enabled = true
-autothrottle_start_delay = 5
-autothrottle_max_delay = 60
-autothrottle_target_concurrency = 1.0
-autothrottle_debug = false
-
-# SMMT-specific settings
-[sources.smmt_vehicle_data]
-# Default settings for the SMMT vehicle data source
-save_html = false
-# Data source URLs
-SMMT_DATA_URL = "https://www.smmt.co.uk/vehicle-data/car-registrations/"
-
-
-# No SMMT-specific scrapy settings - will use common settings from [sources.scraping]
-
 # Gov.uk-specific settings
 [sources.gov_uk_vehicle_data]
-# Default settings for the Gov.uk vehicle data source
-save_html = false
 # Direct CSV links for the Gov.uk vehicle statistics
 GB_REGISTRATIONS_URL = "https://assets.publishing.service.gov.uk/media/66f15d48bd3aced9da489bdf/df_VEH0160_GB.csv"
 UK_REGISTRATIONS_URL = "https://assets.publishing.service.gov.uk/media/66f15d6a7aeb85342827abdc/df_VEH0160_UK.csv"
@@ -40,14 +14,14 @@ default_table_type = "govuk"
 # Default pipeline settings
 name = "vehicle_data_pipeline"
 destination = "bigquery"
-dataset_name = "vehicle_data"
+dataset_name = "BQ_DATASET"
 
 # BigQuery destination settings
 [destination.bigquery]
-location = "europe-west2"
+location = "GCS_LOCATION"
 
 [runtime]
-bigquery_job_location = "europe-west2"
+bigquery_job_location = "GCS_LOCATION"
 
 [gstorage_pipeline_name.sources.filesystem]
-bucket_url="gs://compelling-pact-447617-j2-vehicle-data/"
+bucket_url="BUCKET_URL"

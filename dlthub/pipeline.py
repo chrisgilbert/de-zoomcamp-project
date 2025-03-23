@@ -5,7 +5,7 @@ import dlt
 from typing import Dict, Any, Optional
 
 from dlthub.config import PIPELINE_NAME, DESTINATION, BQ_DATASET
-from dlthub.extractors import gov_uk_vehicle_data, smmt_vehicle_data
+from dlthub.extractors import gov_uk_vehicle_data
 from prefect import flow, task
 
 def create_pipeline() -> dlt.Pipeline:
@@ -34,16 +34,8 @@ def run_pipeline(pipeline: Optional[dlt.Pipeline] = None) -> Dict[str, Any]:
         write_disposition="replace"
     )
     
-    # # Load SMMT vehicle registration data
-    # smmt_info = pipeline.run(
-    #     smmt_vehicle_data(), 
-    #     table_name="smmt_vehicle_data",
-    #     write_disposition="replace"
-    # )
-    
     return {
-        "gov_uk_info": gov_uk_info,
-        # "smmt_info": smmt_info
+        "gov_uk_info": gov_uk_info
     }
 
 
