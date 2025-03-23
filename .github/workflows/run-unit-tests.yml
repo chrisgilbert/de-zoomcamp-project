@@ -26,4 +26,6 @@ jobs:
 
     - name: Run tests
       run: |
+        cp .env.example .env
+        make prefect-server
         python run_tests.py
