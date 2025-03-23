@@ -38,6 +38,11 @@ dbt-build:
 	@echo "🏗️  Building dbt models..."
 	python load_and_transform.py --transform-only
 
+load:
+	$(MAKE) test-env
+	@echo "🔄 Running load flows..."
+	python load_and_transform.py --load-only
+
 prefect-server:
 	$(MAKE) test-env
 	@echo "🔍 Checking if Prefect server is running..."
@@ -50,15 +55,19 @@ prefect-server:
 		echo "✅ Prefect server is already running"; \
 	fi
 
-load:
-	$(MAKE) test-env
-	@echo "🔄 Running load flows..."
-	python load_and_transform.py --load-only
-
 setup:
-	@echo "🔄 Setting up Prefect server..."
-	$(MAKE) prefect-server
+	@echo "⚙️ Setting up python environment..."
+	if [ ! -d ".venv" ]; then \
+		python -m venv .venv; \
+		source .venv/bin/activate; \
+	fi
+	@echo "⚙️ Installing requirements..."
+	pip install -U -r requirements.txt
+	@echo "⚙️ Installing prefect-dbt..."
 	pip install -U --pre prefect-dbt
+	@echo "⚙️ Setting up Prefect server..."
+	$(MAKE) prefect-server
+	@echo "⚙️ Registering Prefect blocks..."
 	prefect block register -m prefect_dbt
 
 # Cleanup
@@ -76,6 +85,6 @@ help:
 	@echo "  dbt-build     - Build dbt models"
 	@echo "  prefect-server - Start Prefect server"
 	@echo "  load          - Run data loading flows"
-	@echo "  setup         - Set up Prefect server and register blocks"
+	@echo "  setup         - Set up python, prefect server and register blocks"
 	@echo "  clean         - Stop Prefect server and cleanup"
 	@echo "  help          - Show this help message"

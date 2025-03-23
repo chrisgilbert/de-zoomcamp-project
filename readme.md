@@ -2,56 +2,50 @@
 
 ## Description
 
-This project extracts data from the UK Government data and SMMT (Society of Motor Manufacturers and Traders).
-The SMMT data is not available in free data sets, but the monthly summary data is scraped from their website.
+This project analyzes vehicle registration trends in the UK, focusing on the adoption of different fuel types (petrol, diesel, electric, hybrid) over time.
+
+The project extracts data from the uk.gov car registrations data sets.
 
 The gov.uk data is available here: https://www.gov.uk/government/statistical-data-sets/vehicle-licensing-statistics-data-files
-The latest SMMT data summary is at: https://www.smmt.co.uk/vehicle-data/car-registrations/
-At the time of writing it is available up until Sept 2024. 
-The SMMT data is then used to supplement the missing months up until Feb 2025.
 
-The project analyzes vehicle registration trends in the UK, focusing on the adoption of different fuel types (petrol, diesel, electric, hybrid) over time.
-
-This helps show the uptake of alternative fuel vehicles. Where available in the gov.uk data, it is broken down into manufactuer, so we can see the most popular brands of EVs and hybrids over time.
+This helps show the uptake of alternative fuel vehicles. The data is loaded and then transformed to add useful reporting aggregations so we can see the fuel type adoption over time, and the different fuel types by vehicle manufacturer.
 
 ## Tech Stack
 
-The supporting infrastructure is:
+The supporting infrastructure and tooling is:
 
 - Google BigQuery for the data warehouse
-- DLT (Data Loading Tool) for ingestion into BigQuery
-- DBT (Data Build Tool) for data transformation in BigQuery
-- Prefect Cloud for orchestrating the jobs
+- DLT (Data Loading Tool) for copying to GCP storage and then ingestion into BigQuery
+- DBT (Data Build Tool) for data transformations in BigQuery
+- Prefect Cloud for orchestrating the load and transformation jobs
 - Opentofu for managing the underlying infrastructure
 - Looker studio for visualizing the data
-- SQLFmt for SQL formatting
+- Make for simplfying the local command runs and setup
 
 ## Project Structure
 
 ```
 .
-├── dbt/                    # DBT models and configurations
-│   ├── models/             # DBT models
-│   │   ├── staging/        # Staging models
-│   │   ├── intermediate/   # Intermediate models
-│   │   └── marts/          # Mart models for analysis
-│   ├── dbt_project.yml     # DBT project configuration
-│   ├── profiles.yml        # DBT connection profiles
-│   └── sqlfmt.toml         # SQL formatting configuration
-├── dlt/                    # Data Loading Tool code
-│   ├── extractors/         # Data extraction modules
+├── dbt/                      # DBT models and configurations
+│   ├── models/               # DBT models
+│   │   ├── staging/          # Staging models
+│   │   └── reporting/        # Reporting models for analysis
+│   ├── dbt_project.yml       # DBT project configuration
+│   ├── profiles.yml          # DBT connection profiles
+│   └── sqlfmt.toml           # SQL formatting configuration
+├── dlthub/                   # Data Loading Tool code
+│   ├── extractors/           # Data extraction modules
 │   │   ├── gov_uk_extractor.py  # UK Government data extractor
-│   │   └── smmt_extractor.py    # SMMT data extractor
-│   ├── config.py           # Configuration settings
-│   └── pipeline.py         # Main pipeline module
-├── terraform/              # Terraform (OpenTofu) infrastructure code
-├── tests/                  # Test files
+│   ├── config.py             # Configuration settings
+│   └── pipeline.py           # Main pipeline module
+├── opentofu/                 # OpenTofu (terraform) infrastructure code
+├── tests/                    # Test files
 │   └── test_dlt_pipeline.py  # Tests for the DLT pipeline
-├── data/                   # Data directory (created at runtime)
-│   ├── raw/                # Raw data files
-│   └── processed/          # Processed data files
-├── requirements.txt        # Python dependencies
-└── README.md               # Project documentation
+├── dlthub/data               # Temporary data directory (created at runtime)
+│   ├── raw/                  # Raw data files
+│   └── processed/            # Processed data files
+├── requirements.txt          # Python dependencies
+└── readme.md                 # Project documentation
 ```
 
 ## Setup Instructions
@@ -59,13 +53,15 @@ The supporting infrastructure is:
 ### Prerequisites
 
 - Python 3.8+
-- Google Cloud account with BigQuery enabled
+- Google Cloud account with BigQuery and storage enabled
 - Google Cloud project already created
 - A working gcloud CLI set up with authentication to access it.
 - The BigQuery and storage APIs enabled for your CLI user
-- Prefect Cloud account (optional, can use local Prefect server)
 - Opentofu (for infrastructure setup) 
-- Asdf - for managing versions of tools
+
+There is some assistance and documentation on setting these up below. 
+
+Before you begin, please create a project in Google BigQuery if you don't already have an appropriate one to use.
 
 ### Installation
 
@@ -76,13 +72,18 @@ The supporting infrastructure is:
    ```
 
 2. Set up environment variables:
-   Create a `.env` file with the following variables in the root of the repo:
+   Create a `.env` file with the following variables in the root of the repo
+   
+   ```
+   cp .env.example .env
+   ```
+   Change the file to ensure the following env vars are set at the top of the file 
+   (you do not need to change the rest of the file)
+
    ```
    export GCP_PROJECT_ID=your-gcp-project-id
-   export BQ_DATASET=vehicle_data
    export GCS_BUCKET=your-gcs-bucket-name
-   export PREFECT_API_KEY=your-prefect-api-key
-   export PREFECT_WORKSPACE=your-prefect-workspace
+   ```
 
 3. Create and activate a virtual environment:
    ```
@@ -92,74 +93,53 @@ The supporting infrastructure is:
    # On Windows: .venv\Scripts\activate
    ```
 
-4. Install dependencies:
-   ```
-   pip install -r requirements.txt
-   ```
+4. Ensure you have a gcloud cli installed, following the setup instructions here:
+   https://cloud.google.com/sdk/docs/install 
 
-5. Install OpenTofu using the instructions at https://opentofu.org/docs/intro/install/
-
-6. Apply the opentofu configuration:
-
+   Setup the default authentication profile by running the following command, and logging in with your browser:
    ```
-   cd tofu
-   tofu apply
+   gcloud auth application-default login 
    ```
 
-7. Check the dlthub secrets file and ensure it is configured correctly:
+5. Run the python setup script using make. This should install the dependencies, and 
+   setup a local instance of prefect server.
+   ```
+   make setup
+   ```
 
-   cat dlthub/.dlt/secrets.toml
+6. Install OpenTofu using the instructions at https://opentofu.org/docs/intro/install/
+
+7. Apply the opentofu configuration to create the cloud infrastructure in GCP:
+
+   ```
+   make tofu
+   ```
 
 ### Running the Pipeline
 
-1. Run the DLT pipeline to extract and load data:
+1. Run the DLT pipeline to download and load data:
    ```
-   cd dlthub
-   python -m dlt.pipeline
-   ```
-
-3. Run DBT models:
-   ```
-   cd dbt
-   dbt run
-   dbt test
+   make load
    ```
 
-4. Run the Prefect flow (includes DLT pipeline and DBT models):
+3. Run DBT transformations:
    ```
-   python -m prefect.flows.vehicle_data_flow
-   ```
-
-5. Deploy the Prefect flow to Prefect Cloud:
-   ```
-   python -m prefect.flows.deploy
+   make transformations
    ```
 
-## Integration with Prefect and DBT
-
-This project uses prefect-dbt for seamless integration between Prefect and DBT. The Prefect flow:
-1. Extracts data using DLT
-2. Runs DBT models
-3. Runs DBT tests
-
-SQL formatting is handled separately as a development task using the `format_sql.py` script.
-
-The deployment uses Docker infrastructure to ensure consistent execution environments.
+If this all works, you will have a vehicle_data dataset with some tables and views beneath it in BigQuery.
 
 ## Data Models
 
 ### Staging Models
 - `stg_gov_uk_vehicle_data`: Standardized vehicle licensing data from the UK Government
-- `stg_smmt_vehicle_data`: Standardized vehicle registration data from SMMT
 
-### Intermediate Models
-- `int_monthly_registrations`: Combined monthly registration data from both sources
-
-### Mart Models
-- `mart_vehicle_registrations`: Analysis of vehicle registrations by fuel type, including market share, year-over-year growth, and rolling totals
+### Reporting Models
+- `rep_aggregations_by_manufacturer`: Analysis of registrations by vehicle manufacturer
+- `rep_aggregations_by_fuel_type`: Breakdown of registrations by fuel type
 
 ## License
 
-[Specify your license here]
+MIT
 
 
