@@ -11,11 +11,6 @@ from dlthub.config import RAW_DATA_DIR
 from prefect import task
 
 
-# Get configuration from DLT
-govuk_config = dlt.config["sources.gov_uk_vehicle_data"]
-GB_REGISTRATIONS_URL = govuk_config.get("GB_REGISTRATIONS_URL")
-UK_REGISTRATIONS_URL = govuk_config.get("UK_REGISTRATIONS_URL")
-
 @task
 def download_file(url: str, filename: str) -> Optional[str]:
     """
@@ -41,7 +36,7 @@ def download_file(url: str, filename: str) -> Optional[str]:
         return file_path
     except Exception as e:
         print(f"Error downloading file {url}: {e}")
-        return None
+        raise e
 
 @task
 def process_csv_file(file_path: str) -> Optional[pd.DataFrame]:
@@ -78,8 +73,11 @@ def process_csv_file(file_path: str) -> Optional[pd.DataFrame]:
         return None
 
 @task
-@dlt.resource(name="gov_uk_vehicle_data")
-def gov_uk_vehicle_data() -> Iterator[Dict[str, Any]]:
+@dlt.source(name="gov_uk_vehicle_data")
+def gov_uk_vehicle_data(
+        GB_REGISTRATIONS_URL: str = dlt.config.value,
+        UK_REGISTRATIONS_URL: str = dlt.config.value
+    ) -> Iterator[Dict[str, Any]]:
     """
     DLT resource for extracting and processing UK Government vehicle data.
     
@@ -87,17 +85,25 @@ def gov_uk_vehicle_data() -> Iterator[Dict[str, Any]]:
         Dict[str, Any]: Dictionaries containing processed vehicle data
     """
     # Download and process GB registrations
-    gb_file_path = download_file(GB_REGISTRATIONS_URL, "df_VEH0160_GB.csv")
-    if gb_file_path:
-        gb_df = process_csv_file(gb_file_path)
+    @dlt.resource(name="gb_registrations")
+    def download_gb_registrations():
+        gb_df = None
+        gb_file_path = download_file(GB_REGISTRATIONS_URL, "df_VEH0160_GB.csv")
+        if gb_file_path:
+            gb_df = process_csv_file(gb_file_path)
         if gb_df is not None:
             for record in gb_df.to_dict('records'):
                 yield record
     
     # Download and process UK registrations
-    uk_file_path = download_file(UK_REGISTRATIONS_URL, "df_VEH0160_UK.csv")
-    if uk_file_path:
-        uk_df = process_csv_file(uk_file_path)
+    @dlt.resource(name="uk_registrations")
+    def download_uk_registrations():
+        uk_df = None
+        uk_file_path = download_file(UK_REGISTRATIONS_URL, "df_VEH0160_UK.csv")
+        if uk_file_path:
+            uk_df = process_csv_file(uk_file_path)
         if uk_df is not None:
             for record in uk_df.to_dict('records'):
                 yield record 
+    
+    return download_gb_registrations(), download_uk_registrations()

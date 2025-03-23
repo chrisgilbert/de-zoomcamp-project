@@ -12,6 +12,7 @@ dlt[bigquery]
 dlt[duckdb]
 pytest
 pytest-cov
-prefect-dbt
+prefect[dbt]
+prefect-docker
 sqlfmt
 pyarrow>=12.0.0
