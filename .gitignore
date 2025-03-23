@@ -14,3 +14,4 @@ terraform/terraform.tfstate.backup
 terraform/terraform.tfstate
 dbt/target
 dbt/dbt_packages
+dbt/logs
