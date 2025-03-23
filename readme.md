@@ -127,9 +127,11 @@ You can run these with `make test`. This will generate some duckdb files in the 
 To run in BigQuery, continue with the next step.
 
 
-### Running the Pipeline
+### Running the Pipeline in Prefect
 
-1. Run the DLT pipeline to download and load data. This will also show the pipeline executing in prefect - you can click on the link it generates, or browse to http://localhost:4200/jobs
+1. Run the DLT pipeline to download and load data. 
+   
+   This will also show the pipeline executing in prefect - you can click on the link it generates, or browse to http://localhost:4200/runs
    ```
    make load
    ```
@@ -143,24 +145,37 @@ If this all works, you will have a vehicle_data dataset with some tables and vie
 
 ## Data Models
 
+These are the data models which dbt creates in BigQuery.
+
 ### Staging Models 
-- `stg_unpivot_gov_uk_vehicles`: Normalise the many quarterly columns into rows, add fields for year and quarter. Paritition by year, cluster by fuel type to facilitate better reporting performance.
-- `stg_normalised_fuel_types_gov_uk`: Normalisation of fuel types, combining the different PHEV and HEV engine types. Partition by year and cluster by fuel type.
+- `stg_unpivot_gov_uk_vehicles`: Normalises the many quarterly columns into rows, add fields for year and quarter. 
+Parititioned by year, clustered by fuel type to facilitate better reporting performance.
+
+- `stg_normalised_fuel_types_gov_uk`: Normalisation of fuel types, combining the different PHEV and HEV engine types. 
+Partitioned by year and clustered by fuel type.
 
 ### Reporting Models
 - `rep_aggregations_by_manufacturer`: Analysis of registrations by vehicle manufacturer
 - `rep_aggregations_by_fuel_type`: Breakdown of registrations by fuel type
 
+
 ## Setting Up Looker Studio Dashboard
+
+The final step is to look at the looker studio dashboard for the project. 
 
 You can see a public dashboard at the following link:
 https://lookerstudio.google.com/reporting/71b10d1a-2802-480d-9d53-c8eb143c0dc5
 
+It looks like the following image:
+
 ![Looker Studio Dashboard](./images/looker-dashboard.png)
 
+You can use the filters at the top left to filter by fuel type, manufacturer or year. The default is to display all data.
 
-You can then if you wish change the reusable data sources to point at the datasets in your own
-GCS account instead. 
+You can also change the dimension the data is grouped on to focus on fuel type or manufacturer.
+
+You can also if you wish change the reusable data sources to point at the datasets in your own
+GCS account instead to test the dashboard against the data pipeline.
 
 To do this:
 
@@ -173,6 +188,8 @@ To do this:
 
 5. Choose big query, and add the `rep_aggregations_by_manufacturer` for the first source.
 6. For the second source, choose `rep_aggregations_by_fuel_type` 
+
+That's it!
 
 
 ## License
