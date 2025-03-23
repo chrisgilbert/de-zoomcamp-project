@@ -140,12 +140,28 @@ If this all works, you will have a vehicle_data dataset with some tables and vie
 - `rep_aggregations_by_manufacturer`: Analysis of registrations by vehicle manufacturer
 - `rep_aggregations_by_fuel_type`: Breakdown of registrations by fuel type
 
-## Setting Up Looker Dashboard
+## Setting Up Looker Studio Dashboard
 
 You can see a public dashboard at the following link:
 https://lookerstudio.google.com/reporting/71b10d1a-2802-480d-9d53-c8eb143c0dc5
 
+![Looker Studio Dashboard](./images/looker-dashboard.png)
 
+
+You can then if you wish change the reusable data sources to point at the datasets in your own
+GCS account instead. 
+
+To do this:
+
+1. Browse to the public address above when signed in with your own google cloud account
+2. Click the three dots at the top right, then 'Make a copy'
+3. You may prompted to give Looker Studio access to your account, follow those instructions.
+4. On the data source mapping box that appears, click the new source dropdown, then go to the bottom and add a datasource.
+
+![Change Data Sources](./images/change-data-sources.png)
+
+5. Choose big query, and add the `rep_aggregations_by_manufacturer` for the first source.
+6. For the second source, choose `rep_aggregations_by_fuel_type` 
 
 
 ## License
