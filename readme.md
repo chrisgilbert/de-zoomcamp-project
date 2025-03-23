@@ -140,6 +140,14 @@ If this all works, you will have a vehicle_data dataset with some tables and vie
 - `rep_aggregations_by_manufacturer`: Analysis of registrations by vehicle manufacturer
 - `rep_aggregations_by_fuel_type`: Breakdown of registrations by fuel type
 
+## Setting Up Looker Dashboard
+
+You can see a public dashboard at the following link:
+https://lookerstudio.google.com/reporting/71b10d1a-2802-480d-9d53-c8eb143c0dc5
+
+
+
+
 ## License
 
 MIT

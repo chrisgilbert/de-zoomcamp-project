@@ -1,8 +1,8 @@
 select
     year,
     quarter_number,
-    fuel,
+    fuel_type_normalised,
     sum(registrations) as registrations
-from {{ ref('stg_unpivot_gov_uk_vehicles') }}
-group by year, quarter_number, fuel
+from {{ ref('stg_normalised_fuel_types_gov_uk') }}
+group by year, quarter_number, fuel_type_normalised
 order by year desc, quarter_number asc

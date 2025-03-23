@@ -1,11 +1,12 @@
 {% set fuels = {
-        'Diesel': 'diesel',
-        'Petrol': 'petrol',
-        'Battery electric': 'bev',
-        'Plug-in hybrid electric%': 'phev',
-        'Hybrid electric%': 'hev',
-        'Fuel cell electric': 'fcev',
-        'Other fuel types': 'other'
+        'Diesel': 'Diesel',
+        'Petrol': 'Petrol',
+        'Battery electric': 'Battery EV',
+        'Plug-in hybrid electric%': 'Plug-in Hybrid EV',
+        'Hybrid electric%': 'Hybrid EV',
+        'Fuel cell%': 'Fuel Cell EV',
+        'Other fuel types': 'Other',
+        'Gas': 'LPG',
     } 
 %}
 
@@ -23,6 +24,7 @@ select
     {%- for fuel in fuels.keys() %}
         when fuel like '{{ fuel }}' then '{{ fuels[fuel] }}'
     {% endfor %}
+    else 'Other'
     end as fuel_type_normalised
 from {{ ref('stg_unpivot_gov_uk_vehicles') }}
 ),
