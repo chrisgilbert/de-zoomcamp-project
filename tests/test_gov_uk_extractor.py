@@ -3,6 +3,8 @@ Simple script to test the UK government extractor directly.
 """
 import os
 import sys
+import os
+from dotenv import load_dotenv
 from pathlib import Path
 
 # Add the project root to the Python path
@@ -17,10 +19,16 @@ os.makedirs(raw_data_dir, exist_ok=True)
 # Import the extractor
 from dlthub.extractors.gov_uk_extractor import (
     download_file,
-    process_csv_file,
-    GB_REGISTRATIONS_URL,
-    UK_REGISTRATIONS_URL
+    process_csv_file
 )
+
+# Load environment variables from .env file
+load_dotenv()
+
+# Get URLs from environment variables
+GB_REGISTRATIONS_URL = os.getenv("GB_REGISTRATIONS_URL", "https://assets.publishing.service.gov.uk/media/66f15d48bd3aced9da489bdf/df_VEH0160_GB.csv")
+UK_REGISTRATIONS_URL = os.getenv("UK_REGISTRATIONS_URL", "https://assets.publishing.service.gov.uk/media/66f15d6a7aeb85342827abdc/df_VEH0160_UK.csv")
+
 
 def test_download_and_process():
     """Test downloading and processing the UK government data."""

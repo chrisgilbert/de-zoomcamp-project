@@ -1,5 +1,5 @@
 """
-Script to test the UK government extractor with dlt integration.
+Script to test the UK gov car registrations data extractor with dlt integration.
 """
 
 import os

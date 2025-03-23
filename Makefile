@@ -75,9 +75,14 @@ clean:
 	@echo "🧹 Cleaning up..."
 	prefect server stop 
 
+test:
+	@echo "🧪 Running tests..."
+	python run_tests.py
+
 # Help
 help:
 	@echo "Available targets:"
+	@echo "  test          - Run all tests"
 	@echo "  all           - Run all tasks (tofu, load, transform)"
 	@echo "  tofu          - Run OpenTofu init and apply"
 	@echo "  transform     - Run dbt deps and build"

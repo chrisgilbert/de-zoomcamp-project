@@ -2,25 +2,29 @@
 
 ## Description
 
-This project analyzes vehicle registration trends in the UK, focusing on the adoption of different fuel types (petrol, diesel, electric, hybrid) over time.
+This project analyzes vehicle registration trends in the UK, focusing on the adoption of different fuel types (petrol, diesel, battery electric, hybrid) over time.
 
-The project extracts data from the uk.gov car registrations data sets.
+The project extracts data from the uk.gov car registrations data sets which are up to date as of 2024 Q2. 
 
 The gov.uk data is available here: https://www.gov.uk/government/statistical-data-sets/vehicle-licensing-statistics-data-files
 
-This helps show the uptake of alternative fuel vehicles. The data is loaded and then transformed to add useful reporting aggregations so we can see the fuel type adoption over time, and the different fuel types by vehicle manufacturer.
+This project helps show the uptake of alternative fuel vehicles over time. 
+
+The data is loaded and then transformed to add useful reporting aggregations so we can see the fuel type adoption over time, and the different fuel types by vehicle manufacturer.
+
+
 
 ## Tech Stack
 
 The supporting infrastructure and tooling is:
 
 - Google BigQuery for the data warehouse
-- DLT (Data Loading Tool) for copying to GCP storage and then ingestion into BigQuery
-- DBT (Data Build Tool) for data transformations in BigQuery
-- Prefect Cloud for orchestrating the load and transformation jobs
+- Dlthub for copying to GCP storage (data lake) and then ingestion into BigQuery
+- DBT for data transformations in BigQuery
+- Prefect open-source for orchestrating the load and transformation jobs
 - Opentofu for managing the underlying infrastructure
-- Looker studio for visualizing the data
-- Make for simplfying the local command runs and setup
+- Looker Studio for visualizing the data
+- Make for running the local commands and setup
 
 ## Project Structure
 
@@ -35,9 +39,9 @@ The supporting infrastructure and tooling is:
 │   └── sqlfmt.toml           # SQL formatting configuration
 ├── dlthub/                   # Data Loading Tool code
 │   ├── extractors/           # Data extraction modules
-│   │   ├── gov_uk_extractor.py  # UK Government data extractor
+│   │   ├── gov_uk_extractor.py  # UK gov data extractor
 │   ├── config.py             # Configuration settings
-│   └── pipeline.py           # Main pipeline module
+│   └── pipeline.py           # Main ingestion pipeline module
 ├── opentofu/                 # OpenTofu (terraform) infrastructure code
 ├── tests/                    # Test files
 │   └── test_dlt_pipeline.py  # Tests for the DLT pipeline
@@ -115,6 +119,13 @@ Before you begin, please create a project in Google BigQuery if you don't alread
    ```
    make tofu
    ```
+
+### Running Unit Tests
+
+There are several unit tests to test the download, extract and loading of the data.
+You can run these with `make test`. This will generate some duckdb files in the root of the project, and test the data is being loaded there correctly.
+To run in BigQuery, continue with the next step.
+
 
 ### Running the Pipeline
 
