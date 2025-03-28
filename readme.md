@@ -14,7 +14,6 @@ The pipeline automatically downloads this, loads and transforms it like so:
 graph TD
     subgraph "Data Sources"
         A[Gov.uk Vehicle Data] -->|Extract| C
-        B[SMMT Data] -->|Extract| C
     end
     
     subgraph "Data Pipeline (DLT)"
