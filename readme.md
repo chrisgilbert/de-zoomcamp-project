@@ -8,6 +8,49 @@ The project extracts data from the uk.gov car registrations data sets which are 
 
 The gov.uk data is available here: https://www.gov.uk/government/statistical-data-sets/vehicle-licensing-statistics-data-files
 
+The pipeline automatically downloads this, loads and transforms it like so:
+
+```mermaid
+graph TD
+    subgraph "Data Sources"
+        A[Gov.uk Vehicle Data] -->|Extract| C
+        B[SMMT Data] -->|Extract| C
+    end
+    
+    subgraph "Data Pipeline (DLT)"
+        C[DLT Extractors] -->|Transform| D[DLT Pipeline]
+        D -->|Load| E[BigQuery]
+    end
+    
+    subgraph "Infrastructure (OpenTofu)"
+        T[OpenTofu] -->|Provision| E
+        T -->|Create| V[BigQuery Views]
+    end
+    
+    subgraph "Transformation (dbt)"
+        E -->|Source| F[dbt Models]
+        F -->|Transform| G[Analytical Views]
+    end
+    
+    subgraph "Orchestration (Prefect)"
+        P[Prefect Flows] -->|Schedule & Monitor| C
+        P -->|Orchestrate| F
+    end
+    
+    G -->|Visualize| H[Looker Studio Dashboards]
+    
+    classDef source fill:#f9f,stroke:#333,stroke-width:2px
+    classDef process fill:#bbf,stroke:#333,stroke-width:2px
+    classDef storage fill:#bfb,stroke:#333,stroke-width:2px
+    classDef viz fill:#fbb,stroke:#333,stroke-width:2px
+    
+    class A,B source
+    class C,D,F,P process
+    class E,G storage
+    class H viz
+```
+
+
 This project helps show the uptake of alternative fuel vehicles over time. 
 
 The data is loaded and then transformed to add useful reporting aggregations so we can see the fuel type adoption over time, and the different fuel types by vehicle manufacturer.
