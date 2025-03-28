@@ -14,6 +14,7 @@ The pipeline automatically downloads this, loads and transforms it like so:
 graph TD
     subgraph "Data Sources"
         A[Gov.uk Vehicle Data] -->|Extract| C
+        B[SMMT Data] -->|Extract| C
     end
     
     subgraph "Data Pipeline (DLT)"
@@ -23,7 +24,6 @@ graph TD
     
     subgraph "Infrastructure (OpenTofu)"
         T[OpenTofu] -->|Provision| E
-        T -->|Create| V[BigQuery Views]
     end
     
     subgraph "Transformation (dbt)"
@@ -38,10 +38,10 @@ graph TD
     
     G -->|Visualize| H[Looker Studio Dashboards]
     
-    classDef source fill:#f9f,stroke:#333,stroke-width:2px
-    classDef process fill:#bbf,stroke:#333,stroke-width:2px
-    classDef storage fill:#bfb,stroke:#333,stroke-width:2px
-    classDef viz fill:#fbb,stroke:#333,stroke-width:2px
+    classDef source fill:#ff9999,stroke:#333,stroke-width:2px
+    classDef process fill:#99ccff,stroke:#333,stroke-width:2px
+    classDef storage fill:#99ff99,stroke:#333,stroke-width:2px
+    classDef viz fill:#ffcc99,stroke:#333,stroke-width:2px
     
     class A,B source
     class C,D,F,P process
@@ -191,10 +191,10 @@ These are the data models which dbt creates in BigQuery.
 
 ### Staging Models 
 - `stg_unpivot_gov_uk_vehicles`: Normalises the many quarterly columns into rows, add fields for year and quarter. 
-Parititioned by year, clustered by fuel type to facilitate better reporting performance.
+Partitioned by year and clustered by fuel type to optimize query performance and reduce costs when filtering by these common dimensions.
 
 - `stg_normalised_fuel_types_gov_uk`: Normalisation of fuel types, combining the different PHEV and HEV engine types. 
-Partitioned by year and clustered by fuel type.
+Partitioned by year and clustered by fuel type to enable faster time-series analysis and efficient filtering by vehicle category.
 
 ### Reporting Models
 - `rep_aggregations_by_manufacturer`: Analysis of registrations by vehicle manufacturer
